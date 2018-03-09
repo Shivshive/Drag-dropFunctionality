@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        .container {
+            margin: 10px;
+            width: 500px;
+            height: 200px;
+            border: 1px solid black;
+            border-radius: 2em;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .black-back{
+            background-color: black;
+        }
+
+        .white-back{
+            background-color: white;
+        }
+    </style>
+    <script>
+
+        var back_col ; 
+
+        function allowDrop(event) {
+            event.preventDefault();
+        }
+
+        function drag(event) {
+            event.dataTransfer.setData("text", event.target.id);
+            event.dataTransfer.setData("source",document.getElementById(event.target.id).parentElement.id);
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            var data = event.dataTransfer.getData("text");
+            event.target.appendChild(document.getElementById(data));
+            console.log(event.target.id);
+
+            //Target Element.
+            var target_element = document.getElementById(event.target.id);
+
+            //Source Element.
+            var Source_element = document.getElementById(event.dataTransfer.getData("source"));
+            
+            if (!(Source_element.classList.contains('black-back')) || Source_element.classList.contains('black-back')) {
+                Source_element.classList.add('white-back');
+                Source_element.classList.remove('black-back');
+            }
+            
+            target_element.classList.add('black-back');
+            if(target_element.classList.contains('white-back')){
+                target_element.classList.remove('white-back');
+            }
+
+            
+
+            //New Event to append custom data with Event..
+            var cevent = new CustomEvent('drop_', {
+                detail: {
+                    "msg": "dropped"
+                }
+            });
+            dispatchEvent(cevent);
+
+
+            //Simple way to create Event without data..
+            var devent = new Event('myEve');
+            dispatchEvent(devent);
+
+            //Old Fashion way to start an event..
+            var eevent = document.createEvent('Event');
+            eevent.initEvent('data_avail', true, true);
+            eevent.data = {msg:"live cool!!"};
+            dispatchEvent(eevent);
+        }
+
+
+
+        //Event Listners.. 
+        window.addEventListener('drop_', function (event) {
+
+            console.log(event.detail.msg);
+        });
+        
+        window.addEventListener('myEve', function (event) {
+
+            console.log('new event() called...' + event.type);
+        });
+
+        window.addEventListener('data_avail', function (event) {
+
+            console.log('old fashion Event...' + event.type + " Event data:  "+event.data.msg);
+        });
+    </script>
+</head>
+
+<body>
+    <div id="container1" class="container" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+    <div id="container2" class="container" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <img id="charizard" src="Charizard.png" alt="charizard" height="200" width="230" draggable="true" ondragstart="drag(event)"
+        />
+    </div>
+    <br>
+
+</body>
+
+</html>
